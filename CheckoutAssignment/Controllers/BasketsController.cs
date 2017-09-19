@@ -14,10 +14,6 @@ namespace CheckoutAssignment.Controllers
         public BasketsController(IApplicationStorage storage)
         {
             _storage = storage;
-            if (!_storage.GetBaskets().Any())
-            {
-                var xx = 3;
-            }
         }
 
         [HttpGet]

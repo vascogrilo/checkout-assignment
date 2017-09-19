@@ -14,10 +14,6 @@ namespace CheckoutAssignment.Controllers
         public ItemsController(IApplicationStorage storage)
         {
             _storage = storage;
-            if (!_storage.GetLineItems().Any())
-            {
-                var x = 3;
-            }
         }
 
         [HttpGet]
