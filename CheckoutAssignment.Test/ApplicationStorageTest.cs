@@ -1,5 +1,6 @@
 using CheckoutAssignment.Models;
 using CheckoutAssignment.Storage;
+using System.Linq;
 using Xunit;
 
 namespace CheckoutAssignment.Test
@@ -314,6 +315,89 @@ namespace CheckoutAssignment.Test
                 basket = storage.GetBasket(basket.Id);
                 Assert.NotNull(basket);
                 Assert.Empty(basket.Orders);
+            }
+        }
+
+        [Fact]
+        public void UpdateItemUpdatesOrdersInBaskets()
+        {
+            using (var storage = NewApplicationStorage())
+            {
+                var item1 = new Item { Name = "Gibson SG", Price = 345.56f };
+                item1 = storage.CreateLineItem(item1);
+                var item2 = new Item { Name = "Peavey ValveKing", Price = 220.3f };
+                item2 = storage.CreateLineItem(item2);
+                var item3 = new Item { Name = "Big Muff Pi", Price = 20f };
+                item3 = storage.CreateLineItem(item3);
+                var order1 = new ItemOrder { Item = item1, Amount = 1 };
+                var order2 = new ItemOrder { Item = item2, Amount = 2 };
+                var basket1 = new Basket { Owner = "me", Orders = { order1, order2 } };
+                basket1 = storage.CreateBasket(basket1);
+                var basket2 = new Basket { Owner = "vasco" };
+                basket2 = storage.CreateBasket(basket2);
+
+                item2.Name = "Peavey ValveKing Tube Amp";
+                item2.Price = 209.99f;
+                Assert.True(storage.UpdateLineItem(item2.Id, item2));
+                var newBasket1 = storage.GetBasket(basket1.Id);
+                var newBasket2 = storage.GetBasket(basket2.Id);
+                Assert.Equal(basket2, newBasket2);
+                // basket 1 assertions
+                Assert.Equal(order1, basket1.Orders.FirstOrDefault(o => o.Item.Id == item1.Id));
+                var newOrder2 = basket1.Orders.FirstOrDefault(o => o.Item.Id == item2.Id);
+                Assert.Equal("Peavey ValveKing Tube Amp", newOrder2.Item.Name);
+                Assert.Equal(209.99f, newOrder2.Item.Price);
+            }
+        }
+
+        [Fact]
+        public void RemoveItemUpdatesOrdersInBaskets()
+        {
+            using (var storage = NewApplicationStorage())
+            {
+                var item1 = new Item { Name = "Gibson SG", Price = 345.56f };
+                item1 = storage.CreateLineItem(item1);
+                var item2 = new Item { Name = "Peavey ValveKing", Price = 220.3f };
+                item2 = storage.CreateLineItem(item2);
+                var item3 = new Item { Name = "Big Muff Pi", Price = 20f };
+                item3 = storage.CreateLineItem(item3);
+                var order1 = new ItemOrder { Item = item1, Amount = 1 };
+                var order2 = new ItemOrder { Item = item2, Amount = 2 };
+                var basket1 = new Basket { Owner = "me", Orders = { order1, order2 } };
+                basket1 = storage.CreateBasket(basket1);
+                var basket2 = new Basket { Owner = "vasco" };
+                basket2 = storage.CreateBasket(basket2);
+                
+                Assert.True(storage.DeleteLineItem(item2.Id));
+                var newBasket1 = storage.GetBasket(basket1.Id);
+                var newBasket2 = storage.GetBasket(basket2.Id);
+                Assert.Equal(basket2, newBasket2);
+                // basket 1 assertions
+                Assert.Equal(order1, basket1.Orders.FirstOrDefault(o => o.Item.Id == item1.Id));
+                Assert.Null(basket1.Orders.FirstOrDefault(o => o.Item.Id == item2.Id));
+            }
+        }
+
+        [Fact]
+        public void BasketPrice()
+        {
+            using (var storage = NewApplicationStorage())
+            {
+                var item1 = new Item { Name = "Gibson SG", Price = 345.56f };
+                item1 = storage.CreateLineItem(item1);
+                var item2 = new Item { Name = "Peavey ValveKing", Price = 220.3f };
+                item2 = storage.CreateLineItem(item2);
+                var item3 = new Item { Name = "Big Muff Pi", Price = 20f };
+                item3 = storage.CreateLineItem(item3);
+                var order1 = new ItemOrder { Item = item1, Amount = 3 };
+                var order2 = new ItemOrder { Item = item2, Amount = 2 };
+                var basket1 = new Basket { Owner = "me", Orders = { order1, order2 } };
+                basket1 = storage.CreateBasket(basket1);
+                var basket2 = new Basket { Owner = "vasco" };
+                basket2 = storage.CreateBasket(basket2);
+
+                Assert.Equal(0f, basket2.GetPrice(), 2);
+                Assert.Equal((item1.Price * order1.Amount) + (item2.Price * order2.Amount), basket1.GetPrice(), 2);
             }
         }
     }

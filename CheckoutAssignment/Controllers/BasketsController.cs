@@ -69,7 +69,7 @@ namespace CheckoutAssignment.Controllers
         {
             if (!_storage.ClearBasket(id))
                 return NotFound();
-            return Ok();
+            return NoContent();
         }
 
         [HttpPut]
@@ -85,6 +85,16 @@ namespace CheckoutAssignment.Controllers
             basket.Orders.Remove(order);
             _storage.UpdateBasket(id, basket);
             return new ObjectResult(basket);
+        }
+
+        [HttpGet]
+        [Route("{id}/price")]
+        public IActionResult GetBasketTotalPrice(long id)
+        {
+            var basket = _storage.GetBasket(id);
+            if (basket == null)
+                return NotFound();
+            return Ok(basket.GetPrice());
         }
 
         private static bool AreOrdersValid(IEnumerable<ItemOrder> orders, IApplicationStorage storage)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CheckoutAssignment.Models;
+using System.Linq;
 
 namespace CheckoutAssignment.Storage
 {
@@ -11,7 +12,8 @@ namespace CheckoutAssignment.Storage
     {
         private Dictionary<long, Item> _items;
         private Dictionary<long, Basket> _baskets;
-        private const int _idSeed = 1;
+        private long _nextItemId = 1;
+        private long _nextBasketId = 1;
 
         /// <summary>
         /// Creates new instance of <see cref="Basket"/> and <see cref="Item"/> tables.
@@ -70,9 +72,8 @@ namespace CheckoutAssignment.Storage
                 return null;
             lock (this)
             {
-                var newId = _idSeed + _items.Count;
-                item.Id = newId;
-                _items.Add(newId, item);
+                item.Id = _nextItemId++;
+                _items.Add(item.Id, item);
             }
             return item;
         }
@@ -91,6 +92,10 @@ namespace CheckoutAssignment.Storage
                 return false;
             lock (this)
             {
+                // Did price or name change?
+                var existing = _items[id];
+                if (item.Price != existing.Price || item.Name != existing.Name)
+                    UpdateOrders(item);
                 _items[id] = item;
             }
             return true;
@@ -103,7 +108,14 @@ namespace CheckoutAssignment.Storage
         /// <returns>True if the item existed, false otherwise.</returns>
         public bool DeleteLineItem(long id)
         {
-            return _items.Remove(id);
+            lock (this)
+            {
+                if (!_items.TryGetValue(id, out Item item))
+                    return false;
+                RemoveOrders(item);
+                _items.Remove(id);
+                return true;
+            }
         }
 
         /// <summary>
@@ -150,10 +162,9 @@ namespace CheckoutAssignment.Storage
                 return null;
             lock (this)
             {
-                var newId = _idSeed + _baskets.Count;
-                basket.Id = newId;
+                basket.Id = _nextBasketId++;
                 if (basket.Orders.TrueForAll(o => ContainsLineItem(o.Item.Id)))
-                    _baskets.Add(newId, basket);
+                    _baskets.Add(basket.Id, basket);
                 else return null;
             }
             return basket;
@@ -213,6 +224,36 @@ namespace CheckoutAssignment.Storage
             _items = null;
             _baskets?.Clear();
             _baskets = null;
+        }
+
+        private void UpdateOrders(Item item)
+        {
+            lock (this)
+            {
+                foreach (var basket in GetBaskets())
+                {
+                    var order = basket.Orders.FirstOrDefault(o => o.Item.Id == item.Id);
+                    if (order == null)
+                        continue;
+                    order.Item = item;
+                    //_baskets[basket.Id] = basket;
+                }
+            }
+        }
+
+        private void RemoveOrders(Item item)
+        {
+            lock (this)
+            {
+                foreach (var basket in GetBaskets())
+                {
+                    var order = basket.Orders.FirstOrDefault(o => o.Item.Id == item.Id);
+                    if (order == null)
+                        continue;
+                    basket.Orders.Remove(order);
+                    //_baskets[basket.Id] = basket;
+                }
+            }
         }
     }
 }

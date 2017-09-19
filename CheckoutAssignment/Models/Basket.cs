@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace CheckoutAssignment.Models
 {
@@ -8,5 +8,10 @@ namespace CheckoutAssignment.Models
         public long Id { get; set; }
         public string Owner { get; set; }
         public List<ItemOrder> Orders { get; set; } = new List<ItemOrder>();
+
+        public float GetPrice()
+        {
+            return Orders.Sum(o => o.Item.Price * o.Amount);
+        }
     }
 }
