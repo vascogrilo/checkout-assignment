@@ -7,6 +7,7 @@ namespace CheckoutAssignment.Models
         public long Id { get; set; }
         public string Name { get; set; }
         public float Price { get; set; }
+        public DateTime LastModified { get;set; }
 
         public bool Equals(Item other)
         {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CheckoutAssignment.Models;
 using System.Linq;
+using System;
 
 namespace CheckoutAssignment.Storage
 {
@@ -73,6 +74,7 @@ namespace CheckoutAssignment.Storage
             lock (this)
             {
                 item.Id = _nextItemId++;
+                item.LastModified = DateTime.UtcNow;
                 _items.Add(item.Id, item);
             }
             return item;
@@ -96,6 +98,7 @@ namespace CheckoutAssignment.Storage
                 var existing = _items[id];
                 if (item.Price != existing.Price || item.Name != existing.Name)
                     UpdateOrders(item);
+                item.LastModified = DateTime.UtcNow;
                 _items[id] = item;
             }
             return true;
@@ -163,6 +166,7 @@ namespace CheckoutAssignment.Storage
             lock (this)
             {
                 basket.Id = _nextBasketId++;
+                basket.LastModified = DateTime.UtcNow;
                 if (basket.Orders.TrueForAll(o => ContainsLineItem(o.Item.Id)))
                     _baskets.Add(basket.Id, basket);
                 else return null;
@@ -196,7 +200,10 @@ namespace CheckoutAssignment.Storage
             {
                 // validate orders
                 if (basket.Orders.TrueForAll(o => ContainsLineItem(o.Item.Id)))
+                {
+                    basket.LastModified = DateTime.UtcNow;
                     _baskets[id] = basket;
+                }
                 else return false;
             }
             return true;
@@ -212,6 +219,7 @@ namespace CheckoutAssignment.Storage
             if (!_baskets.TryGetValue(basketId, out Basket basket))
                 return false;
             basket.Orders.Clear();
+            basket.LastModified = DateTime.UtcNow;
             return true;
         }
 
@@ -236,7 +244,7 @@ namespace CheckoutAssignment.Storage
                     if (order == null)
                         continue;
                     order.Item = item;
-                    //_baskets[basket.Id] = basket;
+                    order.LastModified = DateTime.UtcNow;
                 }
             }
         }
@@ -251,7 +259,7 @@ namespace CheckoutAssignment.Storage
                     if (order == null)
                         continue;
                     basket.Orders.Remove(order);
-                    //_baskets[basket.Id] = basket;
+                    basket.LastModified = DateTime.UtcNow;
                 }
             }
         }
