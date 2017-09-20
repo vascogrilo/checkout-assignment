@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckoutAssignment", "CheckoutAssignment\CheckoutAssignment.csproj", "{40C1BEB0-9A8D-41D1-8426-1A83D0476A91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutAssignment", "CheckoutAssignment\CheckoutAssignment.csproj", "{40C1BEB0-9A8D-41D1-8426-1A83D0476A91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckoutAssignment.Test", "CheckoutAssignment.Test\CheckoutAssignment.Test.csproj", "{ECF6C171-AC52-45BC-9F38-6C4FAC5E4E6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutAssignment.Test", "CheckoutAssignment.Test\CheckoutAssignment.Test.csproj", "{ECF6C171-AC52-45BC-9F38-6C4FAC5E4E6A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutAssignment.Client", "CheckoutAssignment.Client\CheckoutAssignment.Client.csproj", "{30747D3C-3479-4AC9-989D-CD787830784A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckoutAssignment.ClientTest", "CheckoutAssignment.ClientTest\CheckoutAssignment.ClientTest.csproj", "{66FF78C1-74DC-43E9-A0F9-0515627ADEB6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{ECF6C171-AC52-45BC-9F38-6C4FAC5E4E6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECF6C171-AC52-45BC-9F38-6C4FAC5E4E6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECF6C171-AC52-45BC-9F38-6C4FAC5E4E6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30747D3C-3479-4AC9-989D-CD787830784A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30747D3C-3479-4AC9-989D-CD787830784A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30747D3C-3479-4AC9-989D-CD787830784A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30747D3C-3479-4AC9-989D-CD787830784A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66FF78C1-74DC-43E9-A0F9-0515627ADEB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66FF78C1-74DC-43E9-A0F9-0515627ADEB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66FF78C1-74DC-43E9-A0F9-0515627ADEB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66FF78C1-74DC-43E9-A0F9-0515627ADEB6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

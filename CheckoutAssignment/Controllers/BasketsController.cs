@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CheckoutAssignment.Controllers
 {
-    [Route("api/baskets")]
+    [Route("api/v1/baskets")]
     public class BasketsController : Controller
     {
         private readonly IApplicationStorage _storage;
@@ -34,12 +34,9 @@ namespace CheckoutAssignment.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] Basket basket)
         {
-            // We'll only allow it if all orders have existing items and amounts above 0
-            if (basket == null)
+            if (!ModelState.IsValid)
                 return BadRequest();
-            if (basket.Orders == null)
-                basket.Orders = new List<ItemOrder>();
-            if (!AreOrdersValid(basket.Orders, _storage))
+            if (basket == null)
                 return BadRequest();
             basket = _storage.CreateBasket(basket);
             return CreatedAtRoute("GetBasket", new { id = basket.Id }, basket);
@@ -48,7 +45,9 @@ namespace CheckoutAssignment.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(long id, [FromBody] Basket basket)
         {
-            if (basket?.Id != id || AreOrdersValid(basket.Orders, _storage))
+            if (!ModelState.IsValid)
+                return BadRequest();
+            if (basket?.Id != id)
                 return BadRequest();
             if (!_storage.UpdateBasket(id, basket))
                 return NotFound();
@@ -99,7 +98,7 @@ namespace CheckoutAssignment.Controllers
 
         private static bool AreOrdersValid(IEnumerable<ItemOrder> orders, IApplicationStorage storage)
         {
-            return orders.All(o => storage.ContainsLineItem(o.Item.Id) && o.Amount > 0);
+            return orders.All(o => storage.ContainsLineItem(o.Item.Id) && storage.GetLineItem(o.Item.Id) == o.Item && o.Amount > 0);
         }
     }
 }

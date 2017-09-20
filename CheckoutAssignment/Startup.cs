@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using CheckoutAssignment.Storage;
-using Microsoft.EntityFrameworkCore;
+using FluentValidation.AspNetCore;
+using CheckoutAssignment.Validation;
 
 namespace CheckoutAssignment
 {
@@ -26,7 +21,14 @@ namespace CheckoutAssignment
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IApplicationStorage, AppStorage>();
-            services.AddMvc();
+            services
+                .AddMvc()
+                .AddFluentValidation(fv =>
+                {
+                    fv.RegisterValidatorsFromAssemblyContaining<ItemValidator>();
+                    fv.RegisterValidatorsFromAssemblyContaining<BasketValidator>();
+                    fv.RegisterValidatorsFromAssemblyContaining<ItemOrderValidator>();
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,7 +38,6 @@ namespace CheckoutAssignment
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseMvc();
         }
     }

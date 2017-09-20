@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CheckoutAssignment.Controllers
 {
-    [Route("api/items")]
+    [Route("api/v1/items")]
     public class ItemsController : Controller
     {
         private readonly IApplicationStorage _storage;
@@ -34,7 +34,7 @@ namespace CheckoutAssignment.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] Item item)
         {
-            if (item == null)
+            if (!ModelState.IsValid)
                 return BadRequest();
             item = _storage.CreateLineItem(item);
             return CreatedAtRoute("GetLineItem", new {id = item.Id}, item);
@@ -43,6 +43,8 @@ namespace CheckoutAssignment.Controllers
         [HttpPut("{id}")]
         public IActionResult Update(long id, [FromBody] Item item)
         {
+            if (!ModelState.IsValid)
+                return BadRequest();
             if (item == null || item.Id != id)
                 return BadRequest();
             if (!_storage.UpdateLineItem(id, item))
