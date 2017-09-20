@@ -13,10 +13,15 @@ This is a coding assignment for a recruitment process so my key assumption here 
 ### 1.1. Item
 
 An item is the basis for a product order inside a basket. It contains the following attributes:
-* ```public long Id { get; set; }```
-* ```public string Name { get; set; }```
-* ```public float Price { get; set; }```
-* ```public DateTime LastModified { get; set; }```
+```csharp
+public class Item
+{
+    public long Id { get; set; }
+    public string Name { get; set; }
+    public float Price { get; set; }
+    public DateTime LastModified { get;set; }
+}
+```
 
 #### 1.1.1. Validation
 * Name is required
@@ -25,9 +30,14 @@ An item is the basis for a product order inside a basket. It contains the follow
 ### 1.2. ItemOrder
 
 Orders are what will be inside a basket, as common sense will state, it's basically a product reference and an amount.
-* ```public Item Item { get; set; }```
-* ```public uint Amount { get; set; }```
-* ```public DateTime LastModified { get; set; }```
+```csharp
+public class ItemOrder
+{
+    public Item Item { get; set; }
+    public uint Amount { get; set; }
+    public DateTime LastModified { get; set; }
+}
+```
 
 #### 1.2.1. Validation
 * Item must be present in storage and the contents of this instance equal to the one it references through the Id.
@@ -37,10 +47,15 @@ Orders are what will be inside a basket, as common sense will state, it's basica
 
 This is the main model for this assignment. Creating and interacting with baskets is the key functionality here.
 It contains the following attributes:
-* ```public long Id { get; set; }```
-* ```public string Owner { get; set; }```
-* ```public List<ItemOrder> Orders { get; set; }```
-* ```public DateTime LastModified { get; set; }```
+```csharp
+public class Basket
+{
+    public long Id { get; set; }
+    public string Owner { get; set; }
+    public List<ItemOrder> Orders { get; set; }
+    public DateTime LastModified { get; set; }
+}
+```
 
 I decided to not implement an elaborate concept of 'Owner' to keep it simple and cut time, in my opinion a simple string is enough for this purpose.
 
@@ -55,19 +70,22 @@ For the sake of this scope everything is stored in memory. Controllers interact 
 ### 2.1 IApplicationStorage
 
 The basic Api was outlined as follows:
-* ```IEnumerable<Item> GetLineItems();```
-* ```Item GetLineItem(long id);```
-* ```bool ContainsLineItem(long id);```
-* ```Item CreateLineItem(Item item);```
-* ```bool UpdateLineItem(long id, Item item);```
-* ```bool DeleteLineItem(long id);```
-* ```IEnumerable<Basket> GetBaskets();```
-* ```Basket GetBasket(long id);```
-* ```bool ContainsBasket(long id);```
-* ```Basket CreateBasket(Basket basket);```
-* ```bool UpdateBasket(long id, Basket basket);```
-* ```bool DeleteBasket(long id);```
-* ```bool ClearBasket(long basketId);```
+
+```csharp
+IEnumerable<Item> GetLineItems();
+Item GetLineItem(long id);
+bool ContainsLineItem(long id);
+Item CreateLineItem(Item item);
+bool UpdateLineItem(long id, Item item);
+bool DeleteLineItem(long id);
+IEnumerable<Basket> GetBaskets();
+Basket GetBasket(long id);
+bool ContainsBasket(long id);
+Basket CreateBasket(Basket basket);
+bool UpdateBasket(long id, Basket basket);
+bool DeleteBasket(long id);
+bool ClearBasket(long basketId);
+```
 
 Required traits:
 * Creating a new item must assign a new id to it as well as set the initial timestamp on it.
