@@ -322,7 +322,7 @@ public async Task<float> GetBasketPrice(long basketId);
 
 And the filtering specifications:
 
-```chsarp
+```csharp
 public class ItemFilteringSpec
 {
     public string HasText { get; set; }
