@@ -27,7 +27,7 @@ namespace CheckoutAssignment.Storage
             CreateLineItem(new Item { Name = "Gibson SG left-handed", Price = 250.99f });
             CreateLineItem(new Item { Name = "Peavey ValveKing Tube amp", Price = 220f });
             CreateBasket(new Basket { Owner = "vasco" });
-            CreateBasket(new Basket { Owner = "james", Orders = { new ItemOrder { Item = GetLineItem(1), Amount = 1 } } });
+            CreateBasket(new Basket { Owner = "james", Orders = { new ItemOrder { Item = GetLineItem(1), Amount = 2 }, new ItemOrder { Item = GetLineItem(1), Amount = 1 } } });
         }
 
         /// <summary>

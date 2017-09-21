@@ -17,9 +17,60 @@ namespace CheckoutAssignment.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Basket> GetAll()
+        public IEnumerable<Basket> GetAll(string owner, string itemText, long itemId, uint amountsAbove, uint amountsBelow, uint ordersAbove, uint ordersBelow, float price, float priceBelow, float priceAbove, string sort)
         {
-            return _storage.GetBaskets();
+            // filtering
+            var baskets = _storage.GetBaskets();
+            if (!string.IsNullOrEmpty(owner))
+                baskets = baskets.Where(b => b.Owner == owner);
+            if (!string.IsNullOrEmpty(itemText))
+                baskets = baskets.Where(b => b.Orders.Any(o => o.Item.Name.Contains(itemText)));
+            if (itemId > 0)
+                baskets = baskets.Where(b => b.Orders.Any(o => o.Item.Id == itemId));
+            if (amountsAbove > 0)
+                baskets = baskets.Where(b => b.Orders.Sum(o => o.Amount) > amountsAbove);
+            if (amountsBelow > 0)
+                baskets = baskets.Where(b => b.Orders.Sum(o => o.Amount) < amountsBelow);
+            if (ordersAbove > 0)
+                baskets = baskets.Where(b => b.Orders.Count > ordersAbove);
+            if (ordersBelow > 0)
+                baskets = baskets.Where(b => b.Orders.Count < ordersBelow);
+            // exact price takes precedence
+            if (price > 0)
+                baskets = baskets.Where(b => b.GetPrice().Equals(price));
+            else
+            {
+                if (priceAbove > 0)
+                    baskets = baskets.Where(b => b.GetPrice() > priceAbove);
+                if (priceBelow > 0)
+                    baskets = baskets.Where(b => b.GetPrice() < priceBelow);
+            }
+            // ordering
+            if (!string.IsNullOrEmpty(sort))
+            {
+                var desc = false;
+                if (sort[0] == '-')
+                    desc = true;
+                if (desc)
+                    sort = sort.Substring(1);
+                switch (sort)
+                {
+                    case "owner":
+                        baskets = desc ? baskets.OrderByDescending(b => b.Owner) : baskets.OrderBy(b => b.Owner);
+                        break;
+                    case "orders":
+                        baskets = desc ? baskets.OrderByDescending(b => b.Orders.Count) : baskets.OrderBy(b => b.Orders.Count);
+                        break;
+                    case "amounts":
+                        baskets = desc ? baskets.OrderByDescending(b => b.Orders.Sum(o => o.Amount)) : baskets.OrderBy(b => b.Orders.Sum(o => o.Amount));
+                        break;
+                    case "price":
+                        baskets = desc ? baskets.OrderByDescending(b => b.GetPrice()) : baskets.OrderBy(b => b.GetPrice());
+                        break;
+                }
+            }
+
+            return baskets;
         }
 
         [HttpGet("{id}", Name = "GetBasket")]

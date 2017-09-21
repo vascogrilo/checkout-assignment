@@ -1,6 +1,7 @@
 ﻿using CheckoutAssignment.Client;
 using CheckoutAssignment.Models;
 using System;
+using static CheckoutAssignment.Client.BasketsApiClient;
 
 namespace CheckoutAssignment.ClientTest
 {
@@ -29,6 +30,18 @@ namespace CheckoutAssignment.ClientTest
             Console.WriteLine("");
             PrintBasket(await client.GetBasket(2));
             PrintItem(await client.CreateItem("Guitar Picks, box of 8", 2f), "");
+
+            var itemFilter = new ItemFilteringSpec { HasText = "Guitar" };
+            foreach(var item in await client.GetItems(itemFilter))
+                PrintItem(item, "");
+
+            itemFilter = new ItemFilteringSpec { PriceAbove = 220 };
+            foreach (var item in await client.GetItems(itemFilter))
+                PrintItem(item, "");
+
+            var basketFilter = new BasketFilteringSpec { OrdersAbove = 1 };
+            foreach (var basket in await client.GetBaskets(basketFilter))
+                PrintBasket(basket);
         }
 
         private static void PrintItem(Item item, string prefix)

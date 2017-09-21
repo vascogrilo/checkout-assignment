@@ -47,10 +47,37 @@ namespace CheckoutAssignment.Client
         }
 
         /// <summary>
+        /// Retrieves all existing items.
+        /// Allows for filtering with <see cref="ItemFilteringSpec"/> and ordering by field name.
+        /// For descending order preprend the field name with '-'.
+        /// </summary>
+        /// <returns>A list of <see cref="Item"/>s</returns>
+        public async Task<List<Item>> GetItems(ItemFilteringSpec filters, string sortByFieldName = null)
+        {
+            var url = $"{ItemsV1BaseUrl}{filters?.GetQueryParams()}";
+            if (!string.IsNullOrEmpty(sortByFieldName))
+                url += $"&sort={sortByFieldName}";
+            var response = await _httpClient.GetStringAsync(url);
+            return JsonConvert.DeserializeObject<IEnumerable<Item>>(response) as List<Item>;
+        }
+
+        /// <summary>
         /// Retrieves all existing baskets.
         /// </summary>
         /// <returns>A list of <see cref="Basket"/>s</returns>
         public async Task<List<Basket>> GetBaskets()
+        {
+            var response = await _httpClient.GetStringAsync(BasketsV1BaseUrl);
+            return JsonConvert.DeserializeObject<IEnumerable<Basket>>(response) as List<Basket>;
+        }
+
+        /// <summary>
+        /// Retrieves all existing baskets.
+        /// Allows for filtering with <see cref="BasketFilteringSpec"/> and ordering by field name.
+        /// For descending order preprend the field name with '-'.
+        /// </summary>
+        /// <returns>A list of <see cref="Basket"/>s</returns>
+        public async Task<List<Basket>> GetBaskets(BasketFilteringSpec filters, string sortByFieldName = null)
         {
             var response = await _httpClient.GetStringAsync(BasketsV1BaseUrl);
             return JsonConvert.DeserializeObject<IEnumerable<Basket>>(response) as List<Basket>;
@@ -332,6 +359,71 @@ namespace CheckoutAssignment.Client
             catch (HttpRequestException)
             {
                 return float.NaN;
+            }
+        }
+
+        public class ItemFilteringSpec
+        {
+            public string HasText { get; set; }
+            public string Name { get; set; }
+            public float Price { get; set; }
+            public float PriceAbove { get; set; }
+            public float PriceBelow { get; set; }
+
+            internal string GetQueryParams()
+            {
+                var parts = new List<string>();
+                if (!string.IsNullOrEmpty(HasText))
+                    parts.Add($"text={HasText}");
+                if (!string.IsNullOrEmpty(Name))
+                    parts.Add($"name={Name}");
+                if (Price > 0)
+                    parts.Add($"price={Price}");
+                if (PriceAbove > 0)
+                    parts.Add($"abovePrice={PriceAbove}");
+                if (PriceBelow > 0)
+                    parts.Add($"belowPrice={PriceBelow}");
+                return "?" + string.Join("&", parts);
+            }
+        }
+
+        public class BasketFilteringSpec
+        {
+            public string Owner { get; set; }
+            public string HasItemText { get; set; }
+            public long HasItemId { get; set; }
+            public uint AmountsAbove { get; set; }
+            public uint AmountsBelow { get; set; }
+            public uint OrdersAbove { get; set; }
+            public uint OrdersBelow { get; set; }
+            public float Price { get; set; }
+            public float PriceAbove { get; set; }
+            public float PriceBelow { get; set; }
+
+            internal string GetQueryParams()
+            {
+                var parts = new List<string>();
+                if (!string.IsNullOrEmpty(Owner))
+                    parts.Add($"owner={Owner}");
+                if (!string.IsNullOrEmpty(HasItemText))
+                    parts.Add($"itemText={HasItemText}");
+                if (HasItemId > 0)
+                    parts.Add($"itemId={HasItemId}");
+                if (AmountsAbove > 0)
+                    parts.Add($"amountsAbove={AmountsAbove}");
+                if (AmountsBelow > 0)
+                    parts.Add($"amountsBelow={AmountsBelow}");
+                if (OrdersAbove > 0)
+                    parts.Add($"ordersAbove={OrdersAbove}");
+                if (OrdersBelow > 0)
+                    parts.Add($"ordersBelow={OrdersBelow}");
+                if (Price > 0)
+                    parts.Add($"price={Price}");
+                if (PriceAbove > 0)
+                    parts.Add($"abovePrice={PriceAbove}");
+                if (PriceBelow > 0)
+                    parts.Add($"belowPrice={PriceBelow}");
+                return "?" + string.Join("&", parts);
             }
         }
 
