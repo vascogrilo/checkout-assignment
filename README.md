@@ -29,7 +29,7 @@ public class Item
 
 ### 1.2. ItemOrder
 
-Orders are what will be inside a basket, as common sense will state, it's basically a product reference and an amount.
+Orders are what will be inside a basket, it's basically a product reference and an amount.
 ```csharp
 public class ItemOrder
 {
@@ -38,6 +38,8 @@ public class ItemOrder
     public DateTime LastModified { get; set; }
 }
 ```
+
+I assumed no kind of discounts would be made and as such I did not put a price on an order. A price is only at the product level, so whenever a product's price changes, the orders will change as well and the price of basket alongside with it.
 
 #### 1.2.1. Validation
 * Item must be present in storage and the contents of this instance equal to the one it references through the Id.
