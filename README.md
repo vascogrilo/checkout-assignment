@@ -112,6 +112,16 @@ The following actions are allowed on this resource:
 ##### 3.1.1. GET /api/v1/items
 Retrieves all items.
 
+Accepts query params for filtering:
+* **text** finds items that contains a certain text
+* **name** finds items with a specific name
+* **price** finds items with a specific price
+* **priceAbove** finds items above a certain price
+* **priceBelow** finds items below a certain price
+
+Accepts query params for ordering:
+* **sort** must be a valid field name, preprended with '-' for descending order.
+
 ##### 3.1.2. GET /api/v1/items/{id}
 Retrieves item with specific **id**.
 
@@ -134,6 +144,21 @@ The following actions are allowed on this resource:
 
 ##### 3.2.1. GET /api/v1/baskets
 Retrieves all baskets.
+
+Accepts query params for filtering:
+* **owner** finds baskets with a specific owner
+* **itemText** finds baskets with items in orders with a certain text
+* **itemId** finds baskets with orders that have a certain item id
+* **amountsAbove** finds baskets with amounts of orders above a certain value
+* **amounsBelow** finds baskets with amounts of orders below a certain value
+* **ordersAbove** finds baskets with number of orders above a certain value
+* **ordersBelow** finds baskets with number of orders below a certain value
+* **price** finds baskets with a certain price
+* **priceAbove** finds baskets above a certain price
+* **priceBelow** finds baskets below a certain price
+
+Accepts query params for ordering:
+* **sort** must be a valid field name, preprended with '-' for descending order.
 
 ##### 3.2.2. GET /api/v1/baskets/{id}
 Retrieves basket with specific **id**.
